@@ -13,7 +13,9 @@ setup(
     entry_points={
         'console_scripts': ['region = gatlab_tools.genomics.region:main']
     },
-    install_requires=['numpy', 'gatlab-tools-extended==0.1.0'],
-    dependency_links=['https://github.com/gatfieldlab/tools_extended/tarball/master#egg=gatlab-tools-extended-0.1.0'],
+    install_requires=['numpy',
+                      'gatlab-tools-extended==0.1.0',
+                      'gatlab-tools-specialized==0.1.0'],
+#    dependency_links=['https://github.com/gatfieldlab/tools_extended/tarball/master#egg=gatlab-tools-extended-0.1.0'],
     zip_safe=False
 )

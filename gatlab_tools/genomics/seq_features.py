@@ -7,8 +7,8 @@ Sequence features/words library for RUST, peak and similar analyses
 
 import itertools
 import numpy as np
-from genomics import codons, structure
-from specialized import cached_objects
+from gatlab_tools.genomics import codons, structure
+from gatlab_tools.specialized import cached_objects
 
 
 __author__ = "Bulak Arpat"
