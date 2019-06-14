@@ -16,6 +16,9 @@ setup(
     install_requires=['numpy',
                       'gatlab-tools-extended==0.1.0',
                       'gatlab-tools-specialized==0.1.0'],
-#    dependency_links=['https://github.com/gatfieldlab/tools_extended/tarball/master#egg=gatlab-tools-extended-0.1.0'],
+    # dependency_links is not used by pip, only by setuptools if used as "python setup.py install"
+    # it will be removed in the following releases
+    dependency_links=['https://github.com/gatfieldlab/tools_extended/tarball/master#egg=gatlab-tools-extended-0.1.0',
+                      'https://github.com/gatfieldlab/tools_specialized/tarball/master#egg=gatlab-tools-specialized-0.1.0'],
     zip_safe=False
 )
