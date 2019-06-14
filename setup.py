@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='gatlab-tools-genomics',
@@ -9,7 +9,7 @@ setup(
     author='Bulak Arpat',
     author_email='bulak.arpat@gmail.com',
     license='GPLv3',
-    packages=['gatlab_tools.accessories'],
+    packages=['gatlab_tools.genomics'],
     entry_points={
         'console_scripts': ['region = genomics.region:main']
     },
