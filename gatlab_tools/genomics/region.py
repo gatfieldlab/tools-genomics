@@ -11,7 +11,7 @@ import sys
 import re
 import operator
 import argparse
-from genomics import utils
+from gatlab_tools.genomics import utils
 
 
 __author__ = "Bulak Arpat"
