@@ -7,9 +7,9 @@ Utilities to work with genomics based python modules.
 
 
 __author__ = "Bulak Arpat"
-__copyright__ = "Copyright 2017, Bulak Arpat"
+__copyright__ = "Copyright 2017-2020, Bulak Arpat"
 __license__ = "GPLv3"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __maintainer__ = "Bulak Arpat"
 __email__ = "Bulak.Arpat@unil.ch"
 __status__ = "Development"
@@ -21,7 +21,8 @@ G_INDEX = (0, )
 GT_INDEX = (0, 2)
 F_INDEX = 11
 S_INDEX = 3
-
+I5_INDEX = 6
+I3_INDEX = 7
 
 class GenomicsUtilityException(Exception):
     """
@@ -32,10 +33,30 @@ class GenomicsUtilityException(Exception):
         super(GenomicsUtilityException, self).__init__(message)
 
 
-def process_cds(cds_file, use_flag=False, t_index=None):
+def process_cds(cds_file, use_flag=False, t_index=None,
+                only_single=False, include_incomplete=False):
     """
     Parses a specially formatted file containing CDS information. The file
     has to of 'prepared_cds' format
+    Args:
+         use_flag: :obj:`bool` to specify if the flag information from the
+                   CDS file should be used (True) or not (False). If it is
+                   used, any transcript models which are not flagged as 'passed'
+                   by a "*" will not be used
+         t_index: :obj:`tuple` of integers to identify the columns to be
+                  concatanated to produce the unique ID. Use T_, G_ or GT_INDEX
+         only_single: :obj:`bool` to specify if only transcript models that
+                      are labeled as 'SINGLE_PROTEIN' - sole transcript isoform
+                      from a gene that can code for a protein
+         include_incomplete: :obj:`bool` to specify if transcript models that
+                             have either incomplete start or end (but not both)
+                             should be included. In this case, the incomplete
+                             terminus will be clipped off so that CDS length is
+                             multiple of 3
+    Returns:
+         tr_db: :obj:`dict` with key referring to transcripts, and value as a
+         tuple of (CDS_start, CDS_end, TR_len).
+
     """
     tr_db = {}
     if t_index is None:
@@ -45,10 +66,21 @@ def process_cds(cds_file, use_flag=False, t_index=None):
             for line in cds_handle:
                 parsed = line.strip().split('\t')
                 tr_id = '|'.join([parsed[i] for i in t_index])
-                if (parsed[S_INDEX] == 'composite' or
-                    (use_flag and parsed[F_INDEX] != '*')):
+                is_incomplete = parsed[I5_INDEX] != parsed[I3_INDEX]
+                is_unusable = parsed[I5_INDEX] == parsed[I3_INDEX] == "False"
+                if (parsed[S_INDEX] == 'composite' or is_unusable or
+                    (use_flag and parsed[F_INDEX] != '*') or
+                    (only_single and parsed[1][:6] != 'SINGLE') or
+                    (not include_incomplete and is_incomplete)):
                         continue
-                tr_db[tr_id] = tuple([int(parsed[i]) for i in P_INDEX])
+                c_start, c_end, c_len = tuple([int(parsed[i]) for i in P_INDEX])
+                if is_incomplete:
+                    extra_bases = (c_end - c_start) % 3
+                    if parsed[I5_INDEX] == "False":
+                        c_start = c_start + extra_bases
+                    else:
+                        c_end = c_end - extra_bases
+                tr_db[tr_id] = (c_start, c_end, c_len)
     except IOError:
         raise GenomicsUtilityException(
             "Could not read the CDS info: {}\n".format(cds_file))
