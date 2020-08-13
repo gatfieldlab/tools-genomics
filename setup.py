@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='gatlab-tools-genomics',
-    version='0.1.0',
+    version='0.1.1',
     description='Collection of data structures and '
                 'utility functions for genomics',
 #   url='NA',
